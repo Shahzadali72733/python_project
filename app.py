@@ -1,19 +1,12 @@
 from flask import Flask
-import firstprogramm  # replace with your script names if needed
-import mewati_model
-import R_Analysis
+import os
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Python project is LIVE 🚀"
-
-# Optional: you can call your existing functions here
-@app.route("/run-first")
-def run_first():
-    firstprogramm.main()  # if your script has a main() function
-    return "firstprogramm ran successfully"
+    return "Flask app running on Railway 🚀"
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
