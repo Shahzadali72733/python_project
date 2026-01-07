@@ -12,4 +12,4 @@ def process():
     import numpy as np
     import nltk
     # heavy processing here
-    return "Processing done!"
+    return "Processing done"
