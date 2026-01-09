@@ -6,7 +6,6 @@ from nltk import Tree
 from nltk.draw.util import CanvasFrame
 from nltk.draw import TreeWidget
 import re
-
 # -------- Helpers --------
 def normalize_sentence(s: str) -> str:
     if not s:
