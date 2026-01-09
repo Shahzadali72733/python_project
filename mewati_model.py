@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox, ttk
-from nltk import Tree
-from nltk.draw.util import CanvasFrame
-from nltk.draw import TreeWidget
 import re
+
+# Tree is only needed for GUI tree rendering; keep optional for web use.
+try:
+    from nltk import Tree
+except Exception:  # pragma: no cover - fallback for environments without nltk/tree
+    Tree = None
+
 # -------- Helpers --------
 def normalize_sentence(s: str) -> str:
     if not s:
@@ -688,8 +689,11 @@ XBAR_TREES = {
 
 
 def build_xbar_tree(tokens):
+    """Create a simple X-Bar style tree; falls back if nltk Tree is missing."""
     if not tokens:
         tokens = ["—"]
+    if Tree is None:
+        return ["TP", tokens]  # lightweight fallback when nltk.tree is unavailable
     return Tree("TP", [
         Tree("DP", [tokens[0]]),
         Tree("T'", [
@@ -824,6 +828,12 @@ class MewatiGUI:
 
 # -------- Main --------
 if __name__ == "__main__":
+    # GUI-only imports kept here so web environments without Tkinter still import data safely.
+    import tkinter as tk
+    from tkinter import ttk, messagebox
+    from nltk.draw.util import CanvasFrame
+    from nltk.draw import TreeWidget
+
     root = tk.Tk()
     gui = MewatiGUI(root)
     root.mainloop()

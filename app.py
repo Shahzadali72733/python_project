@@ -5,6 +5,7 @@ import sys
 from flask import Flask, render_template, request
 
 from beauty_model_01 import predict_beauty_score
+from mewati_model import MORPH_FEATURES, normalize_sentence
 
 # Configure logging
 logging.basicConfig(
@@ -19,18 +20,44 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    user_input = ""
-    result = None
+    beauty_input = ""
+    beauty_result = None
+    mewati_input = ""
+    mewati_rows = None
+    mewati_error = None
 
     if request.method == "POST":
-        user_input = request.form.get("text", "").strip()
-        if user_input:
-            result = predict_beauty_score(user_input)
-            logger.info("Prediction generated for input")
-        else:
-            logger.info("No input provided")
+        form_id = request.form.get("form_id")
 
-    return render_template("index.html", result=result, user_input=user_input)
+        if form_id == "beauty":
+            beauty_input = request.form.get("text", "").strip()
+            if beauty_input:
+                beauty_result = predict_beauty_score(beauty_input)
+                logger.info("Beauty model prediction generated")
+            else:
+                logger.info("Beauty form submitted without input")
+
+        elif form_id == "mewati":
+            mewati_input = request.form.get("mewati_text", "").strip()
+            normalized = normalize_sentence(mewati_input)
+            if normalized:
+                mewati_rows = MORPH_FEATURES.get(normalized)
+                if not mewati_rows:
+                    mewati_error = f"No morphological features found for: {normalized}"
+            else:
+                mewati_error = "Please enter a sentence."
+
+    sample_sentences = list(MORPH_FEATURES.keys())[:10]  # show a few examples
+
+    return render_template(
+        "index.html",
+        beauty_result=beauty_result,
+        beauty_input=beauty_input,
+        mewati_input=mewati_input,
+        mewati_rows=mewati_rows,
+        mewati_error=mewati_error,
+        sample_sentences=sample_sentences,
+    )
 
 
 @app.route("/health")

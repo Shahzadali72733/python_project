@@ -14,18 +14,70 @@
     </style>
 </head>
 <body>
-    <h1>Beauty Model Predictor</h1>
-    <p>Enter text and submit to get a score from your model.</p>
+    <h1>Beauty & Mewati Models</h1>
+    <p>Use the first form for the beauty score. Use the second to view Mewati morphological features.</p>
 
+    <h2>Beauty Model Predictor</h2>
     <form method="POST">
-        <input type="text" name="text" placeholder="Enter text" value="{{ user_input or '' }}" required>
+        <input type="hidden" name="form_id" value="beauty">
+        <input type="text" name="text" placeholder="Enter text" value="{{ beauty_input or '' }}" required>
         <br>
         <button type="submit">Predict</button>
     </form>
-
-    {% if result %}
+    {% if beauty_result %}
     <div class="result">
-        <strong>Result:</strong> {{ result }}
+        <strong>Result:</strong> {{ beauty_result }}
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <h2>Mewati Morphological Features</h2>
+    <p>Enter a Mewati sentence exactly as in the dataset. Examples:</p>
+    <ul>
+        {% for s in sample_sentences %}
+        <li>{{ s }}</li>
+        {% endfor %}
+    </ul>
+
+    <form method="POST">
+        <input type="hidden" name="form_id" value="mewati">
+        <input type="text" name="mewati_text" placeholder="Enter Mewati sentence" value="{{ mewati_input or '' }}" required>
+        <br>
+        <button type="submit">Show Features</button>
+    </form>
+
+    {% if mewati_error %}
+    <div class="result" style="background:#ffebee;border-color:#ffcdd2;">
+        <strong>Error:</strong> {{ mewati_error }}
+    </div>
+    {% endif %}
+
+    {% if mewati_rows %}
+    <div class="result">
+        <strong>Features for:</strong> {{ mewati_input }}
+        <table style="width:100%; border-collapse: collapse; margin-top: 0.5rem;">
+            <thead>
+                <tr>
+                    <th style="border:1px solid #ccc; padding:4px;">Word</th>
+                    <th style="border:1px solid #ccc; padding:4px;">Root</th>
+                    <th style="border:1px solid #ccc; padding:4px;">Morph Structure</th>
+                    <th style="border:1px solid #ccc; padding:4px;">Phonemic Change</th>
+                    <th style="border:1px solid #ccc; padding:4px;">Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in mewati_rows %}
+                <tr>
+                    <td style="border:1px solid #ccc; padding:4px;">{{ row[0] }}</td>
+                    <td style="border:1px solid #ccc; padding:4px;">{{ row[1] }}</td>
+                    <td style="border:1px solid #ccc; padding:4px;">{{ row[2] }}</td>
+                    <td style="border:1px solid #ccc; padding:4px;">{{ row[3] }}</td>
+                    <td style="border:1px solid #ccc; padding:4px;">{{ row[4] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     {% endif %}
 </body>
